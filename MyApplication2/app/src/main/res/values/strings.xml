@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">My Application2</string>
+    <string name="StringImie">Imie</string>
+    <string name="LiczbaOcen">Liczba ocen</string>
+    <string name="Nazwisko">Nazwisko</string>
+    <string name="Oceny">Oceny</string>
+    <string name="WpiszImie">Wpisz imie</string>
+    <string name="WpiszNazwisko">Wpisz Nazwisko</string>
+    <string name="Wpiszoceny">Wpisz liczbe ocen[5-15]</string>
+    <string name="count">Count average</string>
+    <string name="Srednia">Oblicz srednia</string>
+    <string-array name="Subjects">
+        <item>Fizyka</item>
+        <item>Matematyka</item>
+        <item>Elektronika</item>
+        <item>Technika Cyfrowa</item>
+        <item>Podstawy Programowania</item>
+        <item>Bazy Danych</item>
+        <item>Paradygmaty Programowania</item>
+        <item>Systemy wbudowane</item>
+        <item>Modelowanie</item>
+        <item>J.angielski</item>
+        <item>Technika Mikroprocesorowa</item>
+        <item>Inżynieria Oprogramowania</item>
+        <item>Sieci Rozproszone</item>
+        <item>Przedmiot Dodatkowy 1</item>
+        <item>Przedmiot Dodatkowy 2</item>
+    </string-array>
+</resources>
