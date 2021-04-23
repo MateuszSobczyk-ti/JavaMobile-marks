@@ -12,26 +12,29 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+//class recyclerView - useful to present flexibly data as a list
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
     private List<ModelOceny> marksList;
+    //LayoutInflater is useful to build Java Object based on XML files
     private LayoutInflater inflater;
 
-    // data is passed into the constructor
+    // data(subjectName and mark as a list) is passed into the constructor
     MyRecyclerViewAdapter(Activity context, List<ModelOceny> data) {
         this.inflater = context.getLayoutInflater();
         this.marksList = data;
     }
 
-    // inflates the row layout from xml when needed
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         View view = inflater.inflate(R.layout.wiersz_ocena, null);
+        //holder is useful to save reference to component in individual rows
         return new ViewHolder(view);
     }
 
-    // binds the data to the TextView in each row
+    // binds,connect the data to the TextView and RadioGroup in each row
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.myTextView.setTag(position);
@@ -58,22 +61,21 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         RadioGroup radioGroup;
         RadioButton rb1, rb2, rb3, rb4;
 
-        public ViewHolder(@NonNull View glownyElementWiersza) {
-            super(glownyElementWiersza);
-            myTextView = glownyElementWiersza.findViewById(R.id.textView5);
-            radioGroup = (RadioGroup) glownyElementWiersza.findViewById(R.id.radioGroup);
-            rb1 = (RadioButton) glownyElementWiersza.findViewById(R.id.radioButton6);
-            rb2 = (RadioButton) glownyElementWiersza.findViewById(R.id.radioButton9);
-            rb3 = (RadioButton) glownyElementWiersza.findViewById(R.id.radioButton11);
-            rb4 = (RadioButton) glownyElementWiersza.findViewById(R.id.radioButton12);
+        public ViewHolder(@NonNull View Row) {
+            super(Row);
+            myTextView = Row.findViewById(R.id.textView5);
+            radioGroup = (RadioGroup) Row.findViewById(R.id.radioGroup);
+            rb1 = (RadioButton) Row.findViewById(R.id.radioButton6);
+            rb2 = (RadioButton) Row.findViewById(R.id.radioButton9);
+            rb3 = (RadioButton) Row.findViewById(R.id.radioButton11);
+            rb4 = (RadioButton) Row.findViewById(R.id.radioButton12);
 
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup group, int checkedId) {
                     ModelOceny model = (ModelOceny)group.getTag();
-                    RadioButton checked = glownyElementWiersza.findViewById(group.getCheckedRadioButtonId());
+                    RadioButton checked = Row.findViewById(group.getCheckedRadioButtonId());
                     model.setOcena(Integer.valueOf(checked.getText().toString()));
-                    //System.out.println(model.getNazwa()+" ocena: "+model.getOcena());
                 }
             });
         }

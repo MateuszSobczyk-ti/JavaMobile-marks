@@ -4,13 +4,16 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.opengl.Visibility;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -20,6 +23,8 @@ import java.util.jar.Attributes;
 
 public class MainActivity extends AppCompatActivity {
 
+    double averageMark;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,20 +33,23 @@ public class MainActivity extends AppCompatActivity {
 
         EditText nameEditText =(EditText)findViewById(R.id.editTextTextPersonName7);
         EditText secondNameEditText =(EditText)findViewById(R.id.editTextTextPersonName);
+        //numberEditText store amount of marks
         EditText numberEditText =(EditText)findViewById(R.id.editTextNumber);
         List<Boolean> errorList = Arrays.asList(false,false,false);
-        Button ocenyButton = (Button)findViewById(R.id.button);
+        Button markButton = (Button)findViewById(R.id.button);
 
-        ocenyButton.setOnClickListener(new View.OnClickListener(){
+        //click button with text named "oceny" to call onClickListener and change activity on count_average activity
+        markButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View c){
                 Intent intencja = new Intent(MainActivity.this, count_average.class);
+                //send to another activity amount of marks
                 intencja.putExtra("number",numberEditText.getText().toString());
                 startActivityForResult(intencja,1);
             }
         });
 
-
+        //set errorList after text changed
         nameEditText.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -54,18 +62,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void afterTextChanged(Editable s) {
                         String name = nameEditText.getText().toString();
-                        setErrorList(errorList, name, ocenyButton, 0);
+                        setErrorList(errorList, name, markButton, 0);
                     }
                 }
         );
 
+        //set error warning and toast when it lose focus
         nameEditText.setOnFocusChangeListener(
                 new View.OnFocusChangeListener()
                 {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
                         String name = nameEditText.getText().toString();
-                        System.out.println("FOCUS 1");
                         if(!hasFocus) {
                             if (name.length() == 0) {
                                 nameEditText.setError("Field cannot be empty");
@@ -80,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
+        //set errorList after text changed
         secondNameEditText.addTextChangedListener(
                 new TextWatcher() {
                     @Override
@@ -95,11 +104,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void afterTextChanged(Editable s) {
                         String name = secondNameEditText.getText().toString();
-                        setErrorList(errorList,name,ocenyButton,1);
+                        setErrorList(errorList,name,markButton,1);
                     }
                 }
         );
 
+        //set error warning and toast when it lose focus
         secondNameEditText.setOnFocusChangeListener(
                 new View.OnFocusChangeListener()
                 {
@@ -120,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
+        //set errorList after text changed
         numberEditText.addTextChangedListener(
                 new TextWatcher() {
                     @Override
@@ -136,14 +147,16 @@ public class MainActivity extends AppCompatActivity {
                     public void afterTextChanged(Editable s) {
                         int number=0;
                         String number2 = numberEditText.getText().toString();
+                        //cast String to number
                         try {
                             number = Integer.parseInt(number2);
                         } catch (NumberFormatException nfe){}
-                        setErrorList(errorList,number2,ocenyButton,2,number);
+                        setErrorList(errorList,number2,markButton,2,number);
                     }
                 }
         );
 
+        //set error warning and toast when it lose focus
         numberEditText.setOnFocusChangeListener(
                 new View.OnFocusChangeListener()
                 {
@@ -169,21 +182,54 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    //get information about averageMarks from count_average activity
     @Override
-    protected void onActivityResult(int kodZadania, int kodZakonczenia, Intent wyniki)
-    {
-        super.onActivityResult(kodZadania,kodZakonczenia,wyniki);
-        System.out.println("main acitvity");
-        if(kodZakonczenia==RESULT_OK)
-        {
-            double srednia=0;
+    protected void onActivityResult(int kodZadania, int kodZakonczenia, Intent wyniki) {
+        super.onActivityResult(kodZadania, kodZakonczenia, wyniki);
+
+        if (kodZakonczenia == RESULT_OK) {
             Bundle pakunek = wyniki.getExtras();
-            srednia = pakunek.getDouble("average");
-            if(srednia!=0)
-                System.out.println("srednia main activity "+srednia);
+            averageMark = pakunek.getDouble("average");
+            pokazSrednia(averageMark);
         }
     }
 
+    protected void pokazSrednia(double averageMark){
+        TextView message = (TextView)findViewById(R.id.textView3);
+        Button ocenyButton = (Button)findViewById(R.id.button);
+        //messages for button
+        String mess1 = "Super!";
+        String mess2 = "Tym razem mi nie poszlo";
+
+        if(averageMark!=0) {
+            message.setText("Twoja srednia to "+averageMark);
+            //reduce text size
+            ocenyButton.setTextSize(15);
+            if(averageMark>=3) {
+                ocenyButton.setText(mess1);
+            }
+            else{
+                ocenyButton.setText(mess2);
+            }
+            //show message
+            message.setVisibility(View.VISIBLE);
+        }
+
+        //click button below message to close application and get message
+        ocenyButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(ocenyButton.getText()==mess1)
+                Toast.makeText(MainActivity.this, "Gratulacje! Otrzymujesz zaliczenie.", Toast.LENGTH_LONG).show();
+            else
+                Toast.makeText(MainActivity.this, "Wysylam podanie o zaliczenie warunkowe.", Toast.LENGTH_LONG).show();
+            finish();
+        }
+    });
+
+    }
+
+    //save instance state and then restore saved information
     @Override
     protected void onSaveInstanceState(Bundle outState){
         EditText nameEditText =(EditText)findViewById(R.id.editTextTextPersonName7);
@@ -195,27 +241,36 @@ public class MainActivity extends AppCompatActivity {
         outState.putString("keyOne",nameEditText.getText().toString());
         outState.putString("keyTwo",secondNameEditText.getText().toString());
         outState.putString("keyThree",numberEditText.getText().toString());
+        outState.putDouble("keySrednia",this.averageMark);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState){
-        super.onRestoreInstanceState(savedInstanceState);
+         if(savedInstanceState!=null) {
+            super.onRestoreInstanceState(savedInstanceState);
 
-        EditText nameEditText =(EditText)findViewById(R.id.editTextTextPersonName7);
-        EditText secondNameEditText =(EditText)findViewById(R.id.editTextTextPersonName);
-        EditText numberEditText =(EditText)findViewById(R.id.editTextNumber);
+            EditText nameEditText = (EditText) findViewById(R.id.editTextTextPersonName7);
+            EditText secondNameEditText = (EditText) findViewById(R.id.editTextTextPersonName);
+            EditText numberEditText = (EditText) findViewById(R.id.editTextNumber);
+            TextView message = (TextView) findViewById(R.id.textView3);
+            Button ocenyButton = (Button) findViewById(R.id.button);
 
-        System.out.println("onRestoreInstanceState");
+            System.out.println("onRestoreInstanceState");
 
-        nameEditText.setText(savedInstanceState.getString("keyOne"));
-        secondNameEditText.setText(savedInstanceState.getString("keyTwo"));
-        numberEditText.setText(savedInstanceState.getString("keyThree"));
+            nameEditText.setText(savedInstanceState.getString("keyOne"));
+            secondNameEditText.setText(savedInstanceState.getString("keyTwo"));
+            numberEditText.setText(savedInstanceState.getString("keyThree"));
+            this.averageMark = savedInstanceState.getDouble("keySrednia");
+            //if averageMark is calculated - set the message and button
+            if (averageMark != 0)
+                pokazSrednia(averageMark);
+        }
     }
 
 
 
-
+    //checking error for Strings
     public void setErrorList(List<Boolean> errorList, String name, Button ocenyButton, int num){
         if (name.length() == 0) {
             errorList.set(num, false);
@@ -225,6 +280,7 @@ public class MainActivity extends AppCompatActivity {
             errorList.set(num, true);
         }
 
+        //change button visibility depend on information about error
         if (!errorList.contains(false)) {
             ocenyButton.setVisibility(View.VISIBLE);
         }
@@ -233,6 +289,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //checking error for numbers
     public void setErrorList(List<Boolean> errorList, String name, Button ocenyButton, int num, int number){
         if (name.length() == 0) {
             errorList.set(num, false);
@@ -242,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
             errorList.set(num, true);
         }
 
+        //change button visibility depend on information about error
         if (!errorList.contains(false)) {
             ocenyButton.setVisibility(View.VISIBLE);
         }

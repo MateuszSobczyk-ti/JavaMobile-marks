@@ -17,17 +17,17 @@ import java.util.List;
 public class count_average extends AppCompatActivity{
 
     MyRecyclerViewAdapter adapter;
-    double srednia=0;
+    double averageMark=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_count_average);
         //take the number of marks
-        Bundle pakunek = getIntent().getExtras();
+        Bundle pack = getIntent().getExtras();
         int number=0;
         try {
-            number = Integer.parseInt(pakunek.getString("number"));
+            number = Integer.parseInt(pack.getString("number"));
         }catch (NumberFormatException nfe){}
 
         //array of subject names from strings.xml
@@ -45,40 +45,30 @@ public class count_average extends AppCompatActivity{
         adapter = new MyRecyclerViewAdapter(this, rowArray);
         recyclerView.setAdapter(adapter);
 
-
         Button averageButton = (Button)findViewById(R.id.button2);
         averageButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View c){
                 List<ModelOceny> model = adapter.getMarksList();
+                //count averageMark
                 for (ModelOceny m:model) {
-                    srednia += m.getOcena();
+                    averageMark += m.getOcena();
                     System.out.println(m.getNazwa()+" ocena: "+m.getOcena());
                 }
-                System.out.println("rozmiar listy "+adapter.getItemCount());
-                srednia = srednia/adapter.getItemCount();
-                srednia = Math.round(srednia*100.0)/100.0;
-                System.out.println("srednia "+srednia);
+                averageMark = averageMark/adapter.getItemCount();
+                averageMark = Math.round(averageMark*100.0)/100.0;
+                System.out.println("srednia "+averageMark);
 
-                Bundle pakunek=new Bundle();
-                pakunek.putDouble("average",srednia);
+                //finish this activity and go to MainActivity
+                Bundle pack=new Bundle();
+                //load information about averageMark
+                pack.putDouble("average",averageMark);
                 Intent intent = new Intent();
-                intent.putExtras(pakunek);
+                intent.putExtras(pack);
                 setResult(RESULT_OK,intent);
                 finish();
             }
         });
     }
 
-
 }
-/*        Bundle pakunek = getIntent().getExtras();
-        String imie = pakunek.getString("imie");
-        System.out.println(imie);
-        imie.toUpperCase();
-        Bundle pakunekPowrotny = new Bundle();
-        pakunekPowrotny.putString("imie","string powrotny");
-        Intent intencja = new Intent();
-        intencja.putExtras(pakunekPowrotny);
-*/        //setResult(RESULT_OK,intencja);
-        //finish();
